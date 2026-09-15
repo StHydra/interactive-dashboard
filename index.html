@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +6,6 @@
     <title>My Interactive Dashboard</title>
 
     <link rel="stylesheet" href="css/style.css">
-
-    <script src="js/script.js" defer></script>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -32,9 +29,29 @@
 
     <div class="container">
         <div class="row">
-            <!-- Dashboard Content -->
+
+            <div class="col" id="weekly-tasks">
+
+                <script src="task-manager.js"></script>
+
+                <form>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name">
+
+                    <label for="daily-goal">Daily Task Goal:</label>
+                    <input type="number" id="daily-goal" name="daily-goal">
+
+                    <label for="weekly-bonus">Weekly Bonus Tasks:</label>
+                    <input type="number" id="weekly-bonus" name="weekly-bonus">
+
+                    <button type="button" id="goal-btn">Set Goal</button>
+                </form>
+
+                <p id="goal-message"></p>
+
+            </div>
+
         </div>
     </div>
 </body>
 </html>
-```
