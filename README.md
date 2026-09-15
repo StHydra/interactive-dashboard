@@ -4,4 +4,4 @@
 - [ ] Add a metric conversion tool.
 - [ ] Integrate a task list with array storage.
 - [ ] Add JavaScript logic for a live clock.
-- [ ] Add a weekly task goal calculator.
+- [x] Add a weekly task goal calculator.
