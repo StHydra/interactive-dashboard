@@ -5,3 +5,4 @@
 - [ ] Integrate a task list with array storage.
 - [ ] Add JavaScript logic for a live clock.
 - [x] Add a weekly task goal calculator.
+## Weekly Task Goals.
