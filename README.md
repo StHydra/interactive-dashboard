@@ -7,7 +7,10 @@
 - [x] Add a weekly task goal calculator.
 ## Weekly Task Goals.
 This feature calculates a user’s weekly task target by multiplying their daily task goal by five workdays. It then adds any additional weekly bonus tasks to the calculated weekly goal. The user enters their name, daily goal, and bonus tasks into the form, and the program calculates and displays their total weekly task goal when they click the button.
-##Psuedocode
+
+##Imperial/Metric Converter
+The purpose of this application is to convert measurements between US Imperial and Metric units. The user enters a numeric value and selects the type of conversion they want to make. The application can convert inches, feet, yards, and miles into centimeters, meters, or kilometers, and it can also convert centimeters, meters, and kilometers back into inches, feet, yards, or miles.
+###Logic and Pseudocode
 BEGIN
 
 ```
