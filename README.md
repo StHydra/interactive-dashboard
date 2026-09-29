@@ -66,3 +66,15 @@ ELSE
 ```
 
 END
+## Magic Eight Ball
+
+The Magic Eight Ball game allows users to enter a yes/no question and click the Eight Ball to receive a randomly selected answer. If no question is entered, the game prompts the user to enter one.
+
+### Technical Features
+
+* Uses a JavaScript array to store multiple possible answers.
+* Uses `Math.random()` to select a random answer.
+* Uses `addEventListener()` to respond to `mousedown` and `click` events.
+* Uses `getElementById()` and the `.value` property to retrieve the user's question.
+* Uses `innerHTML` and the CSS `display` property to show the randomly selected answer.
+* Includes a reset button that hides the answer and allows the user to ask another question.
