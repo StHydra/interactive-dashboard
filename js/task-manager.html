@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            background: #fff;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group label {
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Scoped so these styles no longer leak into the Complete buttons */
+        .button-group button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        #add-task-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #add-task-btn:hover {
+            background-color: #218838;
+        }
+
+        #delete-list-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #delete-list-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Task List Area */
+        #task-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+        }
+
+        .task-content {
+            flex: 1;
+            min-width: 0;               /* lets long names wrap instead of overflowing */
+            overflow-wrap: anywhere;
+            font-size: 14px;
+        }
+
+        .complete-btn {
+            flex: none;                 /* keep the button its natural size */
+            background-color: #007bff;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .complete-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            padding: 10px 0;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Task Manager</h2>
+
+    <!-- Form Controls -->
+    <form id="task-form">
+        <div class="form-group">
+            <label for="task-name">Task Name</label>
+            <input type="text" id="task-name" placeholder="Enter task name..." autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label for="task-priority">Priority</label>
+            <select id="task-priority">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+            </select>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="task-important">
+            <label for="task-important">Mark as Important</label>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" id="add-task-btn">Add Task</button>
+            <button type="button" id="delete-list-btn">Delete List</button>
+        </div>
+    </form>
+
+    <!-- Task List Container -->
+    <div id="task-list"></div>
+</div>
+
+<script>
+// Global tasks array
+let tasks = [];
+let nextId = 1;
+
+const taskListDiv = document.getElementById("task-list");
+const taskListUl = document.createElement("ul");
+taskListUl.id = "user-tasks";
+taskListDiv.appendChild(taskListUl);
+
+const priorityColors = {
+    High: "#d9534f",
+    Medium: "#f0ad4e",
+    Low: "#5bc0de"
+};
+
+function logTasksState() {
+    console.log(JSON.stringify(tasks));
+}
+
+function renderTasks() {
+    taskListUl.innerHTML = "";
+
+    if (tasks.length === 0) {
+        const empty = document.createElement("li");
+        empty.className = "empty-message";
+        empty.textContent = "No tasks yet.";
+        taskListUl.appendChild(empty);
+        return;
+    }
+
+    tasks.forEach(task => {
+        const li = document.createElement("li");
+        li.className = "task-item";
+        li.style.borderLeft = `6px solid ${priorityColors[task.priority]}`;
+
+        const infoDiv = document.createElement("div");
+        infoDiv.className = "task-content";
+
+        const titleSpan = document.createElement("span");
+        titleSpan.textContent = `${task.name} (${task.priority})`;
+
+        if (task.isImportant) {
+            titleSpan.style.color = "red";
+            titleSpan.style.fontWeight = "bold";
+        }
+
+        if (task.isCompleted) {
+            titleSpan.style.textDecoration = "line-through";
+            titleSpan.style.opacity = "0.6";
+        }
+
+        infoDiv.appendChild(titleSpan);
+
+        const completeBtn = document.createElement("button");
+        completeBtn.type = "button";
+        completeBtn.className = "complete-btn";
+        completeBtn.textContent = task.isCompleted ? "Undo" : "Complete";
+        completeBtn.addEventListener("click", () => markTaskComplete(task.id));
+
+        li.appendChild(infoDiv);
+        li.appendChild(completeBtn);
+        taskListUl.appendChild(li);
+    });
+}
+
+function addTask() {
+    const nameInput = document.getElementById("task-name");
+    const prioritySelect = document.getElementById("task-priority");
+    const importantCheckbox = document.getElementById("task-important");
+
+    const taskName = nameInput.value.trim();
+
+    if (taskName === "") {
+        alert("Please enter a task name.");
+        nameInput.focus();
+        return;
+    }
+
+    tasks.push({
+        id: nextId++,
+        name: taskName,
+        priority: prioritySelect.value,
+        isImportant: importantCheckbox.checked,
+        isCompleted: false
+    });
+
+    nameInput.value = "";
+    importantCheckbox.checked = false;
+    prioritySelect.value = "Medium";
+    nameInput.focus();
+
+    renderTasks();
+    logTasksState();
+}
+
+function markTaskComplete(id) {
+    const task = tasks.find(t => t.id === id);
+    if (task) {
+        task.isCompleted = !task.isCompleted;
+        renderTasks();
+        logTasksState();
+    }
+}
+
+function deleteTaskList() {
+    tasks = [];
+    renderTasks();
+    logTasksState();
+}
+
+// Form submit handles both the Add button and pressing Enter,
+// and preventDefault stops the page from reloading.
+document.getElementById("task-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    addTask();
+});
+
+document.getElementById("delete-list-btn").addEventListener("click", deleteTaskList);
+
+// Initial render (shows the empty state)
+renderTasks();
+</script>
+
+</body>
+</html>
